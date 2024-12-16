@@ -309,7 +309,7 @@ const Customers = () => {
                   <Link
                     to="/client"
                     state={{ customerId: customer._id }}
-                    className="text-white text-decoration-none"
+                    className="text-dark fw-bold text-decoration-none"
                   >
                     {customer.fname} {customer.mname} {customer.lname}
                   </Link>

@@ -12,6 +12,7 @@ import Manage from "./pages/Manage";
 import Calendar from "./pages/Calendar";
 import Footer from "./components/Footer";
 import Tasks from "./pages/Tasks";
+import FrontPage from "./pages/FrontPage";
 
 function App() {
   const [toastAttributes, setToastAttributes] = useState({
@@ -20,37 +21,42 @@ function App() {
     body: "",
   });
   const [GclientId, SetGClientId] = useState();
-  const [user, setUser] = useState({ name: "שאדי מצארוה" });
-  const [office, setOffice] = useState({ name: "משרד שאדי מצארוה ושותפיו" });
+  const [user, setUser] = useState(null);
+  const [office, setOffice] = useState(null);
 
   return (
     <>
-      <GlobalContext.Provider
-        value={{
-          toastAttributes,
-          setToastAttributes,
-          GclientId,
-          SetGClientId,
-          user,
-          office,
-        }}
-      >
-        <BrowserRouter>
-          <Navbar />
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/addClient" element={<AddPerson />} />
-            <Route path="/showClients" element={<Customers />} />
-            <Route path="/client" element={<Customer />} />
-            <Route path="/calendar" element={<Calendar />} />
-            <Route path="/showfiles" element={<Files />} />
-            <Route path="/manage" element={<Manage />} />
-            <Route path="/showClient" element={<Customer />} />
-            <Route path="/tasks" element={<Tasks />} />
-          </Routes>
-          {/* <Footer /> */}
-        </BrowserRouter>
-      </GlobalContext.Provider>
+      {user && office ? (
+        <GlobalContext.Provider
+          value={{
+            toastAttributes,
+            setToastAttributes,
+            GclientId,
+            SetGClientId,
+            user,
+            office,
+          }}
+        >
+          <BrowserRouter>
+            <Navbar />
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/addClient" element={<AddPerson />} />
+              <Route path="/showClients" element={<Customers />} />
+              <Route path="/client" element={<Customer />} />
+              <Route path="/calendar" element={<Calendar />} />
+              <Route path="/showfiles" element={<Files />} />
+              <Route path="/manage" element={<Manage />} />
+              <Route path="/showClient" element={<Customer />} />
+              <Route path="/tasks" element={<Tasks />} />
+              <Route path="*" element={<Home />} />
+            </Routes>
+            {/* <Footer /> */}
+          </BrowserRouter>
+        </GlobalContext.Provider>
+      ) : (
+        <FrontPage />
+      )}
     </>
   );
 }

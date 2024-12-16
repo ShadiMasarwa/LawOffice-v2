@@ -17,25 +17,30 @@ import {
 } from "react-icons/bs";
 
 const AddPerson = () => {
-  const [client, setClient] = useState({
-    fname: "",
-    mname: "",
-    lname: "",
-    gender: 1,
-    idType: 1,
-    id: 0,
-    occupation: "",
-    workat: "",
-    state: "",
-    city: "",
-    address: "",
-    zip: "",
-    email: "",
-    phones: [],
-    notes: "",
-    addDate: "",
-    addedBy: "",
-  });
+  const InitializeClient = () => {
+    return {
+      fname: "",
+      mname: "",
+      lname: "",
+      gender: 1,
+      idType: 1,
+      id: 0,
+      occupation: "",
+      workat: "",
+      state: "",
+      city: "",
+      address: "",
+      zip: "",
+      email: "",
+      phones: [],
+      notes: "",
+      addDate: "",
+      addedBy: "",
+    };
+  };
+
+  const [client, setClient] = useState(InitializeClient);
+
   const [phone, setPhone] = useState({ type: 1, num: "", note: "" });
   const { toastAttributes, setToastAttributes } = useContext(GlobalContext);
 
@@ -119,6 +124,7 @@ const AddPerson = () => {
         updatedClient
       );
       ShowToast(1, `(${client.fname} ${client.lname}) נשמר בהצלחה`);
+      setClient(InitializeClient);
     } catch (error) {
       ShowToast(
         0,
