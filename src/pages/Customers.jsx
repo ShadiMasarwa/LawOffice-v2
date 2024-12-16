@@ -100,20 +100,20 @@ const Customers = () => {
       <h2 className="text-primary">הצגת אנשים</h2>
       <div className="row mb-4">
         <div className="col-md-2 d-grid">
-          <button className="btn btn-outline-success" as={Link} to="/addClient">
-            <span className="m-0 ">
+          <Link className="btn btn-outline-success" to="/addClient">
+            <span className="m-0 mt-1">
               <BsFillPersonPlusFill />
               <span className="m-0 ps-1">הוספה</span>
             </span>
-          </button>
+          </Link>
         </div>
         <div className="col-md-2 d-grid">
-          <button
+          <Link
             className="btn btn-outline-dark"
             onClick={() => setDisplayCards(!displayCards)}
           >
             {displayCards ? "תצוגת כרטיסים" : "תצוגת רשימה"}
-          </button>
+          </Link>
         </div>
         <div className="col-md-4 mb-2">
           <input

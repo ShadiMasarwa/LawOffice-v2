@@ -37,8 +37,7 @@ const AddPerson = () => {
     addedBy: "",
   });
   const [phone, setPhone] = useState({ type: 1, num: "", note: "" });
-  const { toastVisible, setToastVisible, setToastResult, setToastMessage } =
-    useContext(GlobalContext);
+  const { toastAttributes, setToastAttributes } = useContext(GlobalContext);
 
   const handleInputChange = (e) => {
     const { id, value } = e.target;
@@ -76,17 +75,23 @@ const AddPerson = () => {
   };
 
   const ShowToast = (result, message) => {
-    setToastMessage(message);
-    setToastResult(result);
-    setToastVisible(true);
+    const on = { visible: true, result: result, body: message };
+    const off = { visible: false, result: false, body: "" };
+
+    setToastAttributes(on);
 
     setTimeout(() => {
-      setToastVisible(false);
+      setToastAttributes(off);
     }, 3000);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!client.fname.trim()) {
+      ShowToast(0, "שם פרטי לא יכול להיות ריק");
+      document.getElementById("fname").focus();
+      return;
+    }
     const now = new Date();
     const options = { timeZone: "Asia/Jerusalem" };
     const formatter = new Intl.DateTimeFormat("en-GB", {
@@ -124,7 +129,7 @@ const AddPerson = () => {
 
   return (
     <div className="container">
-      {toastVisible && <Toast />}
+      {toastAttributes.visible && <Toast />}
       <h2 className="text-primary">הוספת אנשים</h2>
       <form
         className="row g-3 needs-validation"

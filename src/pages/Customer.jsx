@@ -17,35 +17,87 @@ import {
   BsPersonWorkspace,
   BsSignpost2Fill,
 } from "react-icons/bs";
-const genderMap = {
-  1: "נקבה",
-  2: "זכר",
-  3: "אחר",
-};
-
-const idTypeMap = {
-  1: "ת.ז.",
-  2: "חברה",
-  3: "דרכון",
-};
-
-const phoneTypeMap = {
-  1: "נייד",
-  2: "בית",
-  3: "פקס בית",
-  4: "טלפון עבודה",
-  5: "פקס עבודה",
-  6: "אחר",
-};
 
 const Customer = () => {
-  const location = useLocation();
-  const { customerId } = location.state || {};
+  const { toastAttributes, setToastAttributes, GclientId, SetGClientId } =
+    useContext(GlobalContext);
 
+  const location = useLocation();
   const [customer, setCustomer] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({});
   const [phone, setPhone] = useState({ type: 1, num: "", note: "" });
+
+  const [customerId, setCustomerId] = useState(() => {
+    const idFromLocation = location.state?.customerId;
+    return idFromLocation || GclientId || null;
+  });
+
+  // if (!customerId) {
+  //   return <p className="text-danger">שגיאה: מזהה לקוח אינו זמין.</p>;
+  // }
+
+  useEffect(() => {
+    if (!GclientId && customerId) {
+      SetGClientId(customerId);
+    }
+    if (GclientId && !customerId) {
+      setCustomerId(GclientId);
+    }
+  }, [GclientId, GclientId]);
+
+  useEffect(() => {
+    const fetchCustomer = async () => {
+      if (!customerId) {
+        console.error("Customer ID not provided.");
+        return;
+      }
+      try {
+        const response = await axios.get(
+          `http://localhost:3500/api/people/${customerId}`
+        );
+        const fetchedCustomer = response.data;
+        setCustomer(fetchedCustomer);
+        const formDataCopy = {
+          ...fetchedCustomer,
+          phones: [...fetchedCustomer.phones],
+        };
+        setFormData(formDataCopy);
+        console.log(formDataCopy);
+      } catch (err) {
+        console.error("טעינת הנתונים נכשלה:", err);
+      }
+    };
+
+    fetchCustomer();
+  }, [customerId]);
+  // useEffect(() => {
+  //   if (!GclientId && customerId) {
+  //     SetGClientId(customerId);
+  //   }
+  // }, [GclientId, customerId]);
+
+  // useEffect(() => {
+  //   const fetchCustomer = async () => {
+  //     try {
+  //       const response = await axios.get(
+  //         `http://localhost:3500/api/people/${customerId}`
+  //       );
+  //       const fetchedCustomer = response.data;
+  //       setCustomer(fetchedCustomer);
+  //       const formDataCopy = {
+  //         ...fetchedCustomer,
+  //         phones: [...fetchedCustomer.phones],
+  //       };
+  //       setFormData(formDataCopy);
+  //       console.log(formDataCopy);
+  //     } catch (err) {
+  //       console.error("טעינת הנתונים נכשלה:", err);
+  //     }
+  //   };
+
+  //   fetchCustomer();
+  // }, [customerId]);
 
   const handlePhoneChange = (e) => {
     const { id, value } = e.target;
@@ -70,50 +122,32 @@ const Customer = () => {
   const handleDeletePhone = (id) => {
     setFormData((prevClient) => ({
       ...prevClient,
-      phones: prevClient.phones.filter((phone) => phone.id !== id),
+      phones: prevClient.phones.filter((phone) => phone._id !== id),
     }));
   };
 
   const ShowToast = (result, message) => {
-    setToastMessage(message);
-    setToastResult(result);
-    setToastVisible(true);
+    const on = { visible: true, result: result, body: message };
+    const off = { visible: false, result: false, body: "" };
+
+    setToastAttributes(on);
 
     setTimeout(() => {
-      setToastVisible(false);
+      setToastAttributes(off);
     }, 3000);
   };
 
-  const { toastVisible, setToastVisible, setToastResult, setToastMessage } =
-    useContext(GlobalContext);
-
-  useEffect(() => {
-    if (!customerId) {
-      console.error("Customer ID not provided.");
-      return;
-    }
-
-    const fetchCustomer = async () => {
-      try {
-        const response = await axios.get(
-          `http://localhost:3500/api/people/${customerId}`
-        );
-        setCustomer(response.data);
-        setFormData(response.data);
-      } catch (err) {
-        console.error("טעינת הנתונים נכשלה:", err);
-      }
-    };
-
-    fetchCustomer();
-  }, [customerId]);
-
   const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    const { id, value } = e.target;
+    setFormData((prev) => ({ ...prev, [id]: value }));
   };
 
   const handleSave = async () => {
+    if (!formData.fname.trim()) {
+      ShowToast(0, "שם פרטי לא יכול להיות ריק");
+      document.getElementById("fname").focus();
+      return;
+    }
     try {
       await axios.put(
         `http://localhost:3500/api/people/${customerId}`,
@@ -121,8 +155,9 @@ const Customer = () => {
       );
       setCustomer(formData);
       setIsEditing(false);
+      ShowToast(1, "השינויים נשמרו בהצלחה");
     } catch (err) {
-      console.error("עדכון הנתונים נכשל:", err);
+      ShowToast(0, "שגיאה בשמירת עדכונים");
     }
   };
 
@@ -149,7 +184,7 @@ const Customer = () => {
 
   return (
     <div className="container">
-      {toastVisible && <Toast />}
+      {toastAttributes.visible && <Toast />}
       <h2 className="text-primary">עדכון אנשים</h2>
       <form className="row g-3 needs-validation" noValidate>
         <div className="col-md-3">
@@ -460,7 +495,7 @@ const Customer = () => {
               </thead>
               <tbody>
                 {formData.phones.map((phone, index) => (
-                  <tr key={phone.id}>
+                  <tr key={phone._id}>
                     <th scope="row" className="py-0">
                       {index + 1}
                     </th>
@@ -469,9 +504,9 @@ const Customer = () => {
                       <span
                         className="text-danger"
                         style={{ cursor: "pointer" }}
-                        onClick={() => handleDeletePhone(phone.id)}
+                        onClick={() => handleDeletePhone(phone._id)}
                       >
-                        <BsFillTrashFill />
+                        {isEditing && <BsFillTrashFill />}
                       </span>
                     </td>
                   </tr>

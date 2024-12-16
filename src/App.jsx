@@ -14,9 +14,12 @@ import Footer from "./components/Footer";
 import Tasks from "./pages/Tasks";
 
 function App() {
-  const [toastVisible, setToastVisible] = useState(false);
-  const [toastResult, setToastResult] = useState();
-  const [toastMessage, setToastMessage] = useState();
+  const [toastAttributes, setToastAttributes] = useState({
+    visible: false,
+    resut: false,
+    body: "",
+  });
+  const [GclientId, SetGClientId] = useState();
   const [user, setUser] = useState({ name: "שאדי מצארוה" });
   const [office, setOffice] = useState({ name: "משרד שאדי מצארוה ושותפיו" });
 
@@ -24,12 +27,10 @@ function App() {
     <>
       <GlobalContext.Provider
         value={{
-          toastVisible,
-          setToastVisible,
-          toastResult,
-          setToastResult,
-          toastMessage,
-          setToastMessage,
+          toastAttributes,
+          setToastAttributes,
+          GclientId,
+          SetGClientId,
           user,
           office,
         }}

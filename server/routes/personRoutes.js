@@ -36,19 +36,20 @@ router.get("/:id", async (req, res) => {
 
 router.put("/:id", async (req, res) => {
   const { id } = req.params;
-  const updateData = req.body;
-
+  const updateData = { ...req.body };
+  delete updateData._id;
   try {
-    const updatedCustomer = await CustomerModel.findByIdAndUpdate(
-      id,
-      updateData,
-      {
-        new: true,
-      }
-    );
+    const updatedCustomer = await Person.findByIdAndUpdate(id, updateData, {
+      new: true,
+    });
+
+    if (!updatedCustomer) {
+      return res.status(404).json({ error: "לקוח לא נמצא" });
+    }
+
     res.status(200).json(updatedCustomer);
   } catch (err) {
-    res.status(500).json({ error: "Failed to update customer" });
+    res.status(500).json({ error: "פעולת העדכון נכשלה" });
   }
 });
 
