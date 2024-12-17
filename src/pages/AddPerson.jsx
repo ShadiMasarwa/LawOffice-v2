@@ -92,6 +92,7 @@ const AddPerson = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (!client.fname.trim()) {
       ShowToast(0, "שם פרטי לא יכול להיות ריק");
       document.getElementById("fname").focus();

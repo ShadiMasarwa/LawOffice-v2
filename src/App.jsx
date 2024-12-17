@@ -1,5 +1,7 @@
 import { useState } from "react";
 import "./App.css";
+import { RouterProvider } from "react-router-dom";
+
 import GlobalContext from "./Hooks/GlobalContext";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
@@ -12,7 +14,7 @@ import Manage from "./pages/Manage";
 import Calendar from "./pages/Calendar";
 import Footer from "./components/Footer";
 import Tasks from "./pages/Tasks";
-import FrontPage from "./pages/FrontPage";
+import FPRouters from "./Routers/FPRouters";
 
 function App() {
   const [toastAttributes, setToastAttributes] = useState({
@@ -21,6 +23,8 @@ function App() {
     body: "",
   });
   const [GclientId, SetGClientId] = useState();
+  // const [user, setUser] = useState("null");
+  // const [office, setOffice] = useState("null");
   const [user, setUser] = useState(null);
   const [office, setOffice] = useState(null);
 
@@ -55,7 +59,7 @@ function App() {
           </BrowserRouter>
         </GlobalContext.Provider>
       ) : (
-        <FrontPage />
+        <RouterProvider router={FPRouters} />
       )}
     </>
   );
