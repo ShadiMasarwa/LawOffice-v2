@@ -1,5 +1,5 @@
 const express = require("express");
-const Person = require("../Models/models");
+const Person = require("../Models/personSchema");
 const router = express.Router();
 
 // POST route to create a person

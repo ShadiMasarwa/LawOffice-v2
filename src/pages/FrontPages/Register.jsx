@@ -1,11 +1,10 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { FaRegEye } from "react-icons/fa";
-import { FaRegEyeSlash } from "react-icons/fa";
+import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 
 const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const [showconfirmcassword, setShowConfirmPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const navigate = useNavigate();
 
   const [user, setUser] = useState({
@@ -30,7 +29,34 @@ const Register = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefalt();
+    e.preventDefault(); // Prevent the default form submission behavior
+
+    if (user.password !== user.confirmPassword) {
+      alert("Passwords do not match!");
+      return;
+    }
+
+    try {
+      const response = await fetch("http://localhost:3500/api/users/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(user),
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        alert("Registration successful!");
+        navigate("/"); // Navigate to the home page or another route
+      } else {
+        alert(`Registration failed: ${result.message}`);
+      }
+    } catch (error) {
+      console.error("Error registering user:", error);
+      alert("An error occurred during registration. Please try again.", error);
+    }
   };
 
   return (
@@ -39,7 +65,10 @@ const Register = () => {
         <h2>יצירת משרד חדש</h2>
       </header>
       <div className="register-login_container">
-        <form className="registration-login-form-container">
+        <form
+          className="registration-login-form-container"
+          onSubmit={handleSubmit}
+        >
           <div className="registration-login-form-group">
             <input
               type="text"
@@ -49,7 +78,6 @@ const Register = () => {
               onChange={handleInputChange}
               autoFocus
               required
-              autoComplete="false"
             />
             <input
               type="text"
@@ -58,7 +86,6 @@ const Register = () => {
               value={user.fName}
               onChange={handleInputChange}
               required
-              autoComplete="false"
             />
             <input
               type="text"
@@ -67,7 +94,6 @@ const Register = () => {
               value={user.lName}
               onChange={handleInputChange}
               required
-              autoComplete="false"
             />
             <input
               type="text"
@@ -76,7 +102,6 @@ const Register = () => {
               value={user.role}
               onChange={handleInputChange}
               required
-              autoComplete="false"
             />
             <input
               type="email"
@@ -85,7 +110,6 @@ const Register = () => {
               value={user.email}
               onChange={handleInputChange}
               required
-              autoComplete="false"
             />
             <input
               type="number"
@@ -94,7 +118,6 @@ const Register = () => {
               value={user.phone}
               onChange={handleInputChange}
               required
-              autoComplete="false"
             />
             <div className="registration-login-password-container">
               <input
@@ -104,7 +127,6 @@ const Register = () => {
                 value={user.password}
                 onChange={handleInputChange}
                 required
-                autoComplete="false"
               />
               <span
                 className="registration-login-toggle-password"
@@ -116,27 +138,25 @@ const Register = () => {
 
             <div className="registration-login-password-container">
               <input
-                type={showconfirmcassword ? "text" : "password"}
+                type={showConfirmPassword ? "text" : "password"}
                 placeholder="אימות סיסמה"
                 name="confirmPassword"
                 value={user.confirmPassword}
                 onChange={handleInputChange}
                 required
-                autoComplete="false"
               />
               <span
                 className="registration-login-toggle-password"
-                onClick={() => setShowConfirmPassword(!showconfirmcassword)}
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
               >
-                {showconfirmcassword ? <FaRegEyeSlash /> : <FaRegEye />}
+                {showConfirmPassword ? <FaRegEyeSlash /> : <FaRegEye />}
               </span>
             </div>
             <div className="form-check mt-2">
               <input
-                className="form-check-input "
+                className="form-check-input"
                 style={{ width: "10px", marginLeft: "10px" }}
                 type="checkbox"
-                value=""
                 id="confirmRules"
                 required
               />
@@ -146,11 +166,7 @@ const Register = () => {
               </label>
             </div>
             <div className="registration-login-buttons">
-              <button
-                type="submit"
-                className="registration-login-btn"
-                onClick={handleSubmit}
-              >
+              <button type="submit" className="registration-login-btn">
                 הרשמה
               </button>
               <button
