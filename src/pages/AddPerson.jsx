@@ -157,7 +157,6 @@ const AddPerson = () => {
               placeholder="שם פרטי/חברה"
               required
             />
-            <div className="valid-feedback">נראה טוב!</div>
           </div>
         </div>
         <div className="col-md-3">

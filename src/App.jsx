@@ -3,18 +3,8 @@ import "./App.css";
 import { RouterProvider } from "react-router-dom";
 
 import GlobalContext from "./Hooks/GlobalContext";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Navbar from "./components/Navbar";
-import Home from "./pages/Home";
-import AddPerson from "./pages/AddPerson";
-import Customers from "./pages/Customers";
-import Customer from "./pages/Customer";
-import Files from "./pages/Files";
-import Manage from "./pages/Manage";
-import Calendar from "./pages/Calendar";
-import Footer from "./components/Footer";
-import Tasks from "./pages/Tasks";
 import FPRouters from "./Routers/FPRouters";
+import MainRouters from "./Routers/MainRoters";
 
 function App() {
   const [toastAttributes, setToastAttributes] = useState({
@@ -23,44 +13,32 @@ function App() {
     body: "",
   });
   const [GclientId, SetGClientId] = useState();
-  // const [user, setUser] = useState("null");
-  // const [office, setOffice] = useState("null");
-  const [user, setUser] = useState(null);
-  const [office, setOffice] = useState(null);
+  const [userDetails, setUserDetails] = useState(null);
+  const [officeDetails, setOfficeDetails] = useState(null);
+  const [accessToken, setAccessToken] = useState(null);
 
   return (
     <>
-      {user && office ? (
-        <GlobalContext.Provider
-          value={{
-            toastAttributes,
-            setToastAttributes,
-            GclientId,
-            SetGClientId,
-            user,
-            office,
-          }}
-        >
-          <BrowserRouter>
-            <Navbar />
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/addClient" element={<AddPerson />} />
-              <Route path="/showClients" element={<Customers />} />
-              <Route path="/client" element={<Customer />} />
-              <Route path="/calendar" element={<Calendar />} />
-              <Route path="/showfiles" element={<Files />} />
-              <Route path="/manage" element={<Manage />} />
-              <Route path="/showClient" element={<Customer />} />
-              <Route path="/tasks" element={<Tasks />} />
-              <Route path="*" element={<Home />} />
-            </Routes>
-            {/* <Footer /> */}
-          </BrowserRouter>
-        </GlobalContext.Provider>
-      ) : (
-        <RouterProvider router={FPRouters} />
-      )}
+      <GlobalContext.Provider
+        value={{
+          toastAttributes,
+          setToastAttributes,
+          GclientId,
+          SetGClientId,
+          userDetails,
+          officeDetails,
+          setUserDetails,
+          setOfficeDetails,
+          accessToken,
+          setAccessToken,
+        }}
+      >
+        {userDetails && officeDetails ? (
+          <RouterProvider router={MainRouters} />
+        ) : (
+          <RouterProvider router={FPRouters} />
+        )}
+      </GlobalContext.Provider>
     </>
   );
 }

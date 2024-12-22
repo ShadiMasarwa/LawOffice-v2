@@ -2,36 +2,32 @@ const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
 const { connectDB } = require("./config/db.js");
-const userRoutes = require("./routes/usersRoutes.js");
-console.log(1);
+// const userRoutes = require("./routes/usersRoutes.js");
+const OfficeRoutes = require("./routes/OfficeRoutes.js");
 const app = express();
 const PORT = process.env.PORT || 3500;
-console.log(2);
 
 // Middleware
 app.use(cors());
-console.log(3);
 app.use(express.json());
-console.log(4);
 
 // MongoDB Connection
 connectDB();
-console.log(5);
 
 // Routes
-app.use("/api/users", userRoutes);
-console.log(6);
+// app.use("/api/users", userRoutes);
+app.use("/api/office", OfficeRoutes);
 
 // Default Route
-app.get("/", (req, res) => {
-  res.status(200).json({ message: "API is running!" });
-});
+// app.get("/", (req, res) => {
+//   res.status(200).json({ message: "API is running!" });
+// });
 
-// Error Handling Middleware
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ error: err.message || "Internal Server Error" });
-});
+// // Error Handling Middleware
+// app.use((err, req, res, next) => {
+//   console.error(err.stack);
+//   res.status(500).json({ error: err.message || "Internal Server Error" });
+// });
 
 // Start the Server
 app.listen(PORT, () => {

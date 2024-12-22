@@ -14,7 +14,7 @@ router.post("/register", async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // Add extra fields
-    const addedDate = new Date().toLocaleString("en-GB", { hour12: false });
+    const addedDate = new Date().toLocaleString("he", { hour12: false });
 
     // Save to "admins" collection
     const newAdmin = new Admin({
