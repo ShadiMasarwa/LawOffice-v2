@@ -1,10 +1,11 @@
 import { useContext } from "react";
 import GlobalContext from "../Hooks/GlobalContext";
 
-import React from "react";
-
 const Toast = () => {
   const { toastAttributes, setToastAttributes } = useContext(GlobalContext);
+
+  if (!toastAttributes.visible) return null;
+
   return (
     <div
       className="toast show position-fixed bottom-0 end-0 m-3"

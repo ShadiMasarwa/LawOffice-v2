@@ -1,8 +1,7 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
 import GlobalContext from "../Hooks/GlobalContext";
-import Toast from "../components/Toast";
 import {
   BsBuildingsFill,
   BsCalendar2WeekFill,
@@ -19,85 +18,24 @@ import {
 } from "react-icons/bs";
 
 const Customer = () => {
-  const { toastAttributes, setToastAttributes, GclientId, SetGClientId } =
-    useContext(GlobalContext);
+  const { ShowToast, userDetails, officeDetails } = useContext(GlobalContext);
 
   const location = useLocation();
   const [customer, setCustomer] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
-  const [formData, setFormData] = useState({});
+  const [formData, setFormData] = useState({ phones: [] });
   const [phone, setPhone] = useState({ type: 1, num: "", note: "" });
 
-  const [customerId, setCustomerId] = useState(() => {
-    const idFromLocation = location.state?.customerId;
-    return idFromLocation || GclientId || null;
-  });
-
-  // if (!customerId) {
-  //   return <p className="text-danger">שגיאה: מזהה לקוח אינו זמין.</p>;
-  // }
+  const nameRef = useRef(null);
+  const phoneRef = useRef(null);
 
   useEffect(() => {
-    if (!GclientId && customerId) {
-      SetGClientId(customerId);
+    if (location.state?.customer) {
+      setCustomer(location.state.customer);
+      setFormData(location.state.customer);
+      console.log(location.state.customer);
     }
-    if (GclientId && !customerId) {
-      setCustomerId(GclientId);
-    }
-  }, [GclientId, GclientId]);
-
-  useEffect(() => {
-    const fetchCustomer = async () => {
-      if (!customerId) {
-        console.error("Customer ID not provided.");
-        return;
-      }
-      try {
-        const response = await axios.get(
-          `http://localhost:3500/api/people/${customerId}`
-        );
-        const fetchedCustomer = response.data;
-        setCustomer(fetchedCustomer);
-        const formDataCopy = {
-          ...fetchedCustomer,
-          phones: [...fetchedCustomer.phones],
-        };
-        setFormData(formDataCopy);
-        console.log(formDataCopy);
-      } catch (err) {
-        console.error("טעינת הנתונים נכשלה:", err);
-      }
-    };
-
-    fetchCustomer();
-  }, [customerId]);
-  // useEffect(() => {
-  //   if (!GclientId && customerId) {
-  //     SetGClientId(customerId);
-  //   }
-  // }, [GclientId, customerId]);
-
-  // useEffect(() => {
-  //   const fetchCustomer = async () => {
-  //     try {
-  //       const response = await axios.get(
-  //         `http://localhost:3500/api/people/${customerId}`
-  //       );
-  //       const fetchedCustomer = response.data;
-  //       setCustomer(fetchedCustomer);
-  //       const formDataCopy = {
-  //         ...fetchedCustomer,
-  //         phones: [...fetchedCustomer.phones],
-  //       };
-  //       setFormData(formDataCopy);
-  //       console.log(formDataCopy);
-  //     } catch (err) {
-  //       console.error("טעינת הנתונים נכשלה:", err);
-  //     }
-  //   };
-
-  //   fetchCustomer();
-  // }, [customerId]);
+  }, [location.state?.customer]);
 
   const handlePhoneChange = (e) => {
     const { id, value } = e.target;
@@ -115,6 +53,7 @@ const Customer = () => {
       }));
       setPhone({ type: 1, num: "", note: "" });
     } else {
+      phoneRef.current.focus();
       ShowToast(0, "לא הוכנס מספר טלפון");
     }
   };
@@ -126,17 +65,6 @@ const Customer = () => {
     }));
   };
 
-  const ShowToast = (result, message) => {
-    const on = { visible: true, result: result, body: message };
-    const off = { visible: false, result: false, body: "" };
-
-    setToastAttributes(on);
-
-    setTimeout(() => {
-      setToastAttributes(off);
-    }, 3000);
-  };
-
   const handleInputChange = (e) => {
     const { id, value } = e.target;
     setFormData((prev) => ({ ...prev, [id]: value }));
@@ -145,13 +73,18 @@ const Customer = () => {
   const handleSave = async () => {
     if (!formData.fname.trim()) {
       ShowToast(0, "שם פרטי לא יכול להיות ריק");
-      document.getElementById("fname").focus();
+      nameRef.current.focus();
       return;
     }
+
     try {
       await axios.put(
-        `http://localhost:3500/api/people/${customerId}`,
-        formData
+        `http://localhost:3500/api/clients/updateclient/${customer._Id}`,
+        {
+          formData,
+          userDetails: { _id: userDetails._id },
+          officeDetails: { _id: officeDetails._id },
+        }
       );
       setCustomer(formData);
       setIsEditing(false);
@@ -166,32 +99,16 @@ const Customer = () => {
     setIsEditing(false);
   };
 
-  if (!customerId) {
-    return (
-      <div className="container text-center mt-5">
-        <p className="text-danger">שגיאה: מזהה לקוח אינו זמין.</p>
-      </div>
-    );
-  }
-
-  if (!customer) {
-    return (
-      <div className="container text-center mt-5">
-        <p>טוען נתונים...</p>
-      </div>
-    );
-  }
-
   return (
     <div className="container">
-      {toastAttributes.visible && <Toast />}
-      <h2 className="text-primary">עדכון אנשים</h2>
+      <h2 className="text-primary">עדכון אנשים </h2>
       <form className="row g-3 needs-validation" noValidate>
         <div className="col-md-3">
           <div className="input-group has-validation">
             <span className="input-group-text">
               <BsPersonFill />
             </span>
+
             <input
               type="text"
               className="form-control"
@@ -201,8 +118,8 @@ const Customer = () => {
               placeholder="שם פרטי/חברה"
               required
               disabled={!isEditing}
+              ref={nameRef}
             />
-            <div className="valid-feedback">נראה טוב!</div>
           </div>
         </div>
         <div className="col-md-3">
@@ -447,6 +364,7 @@ const Customer = () => {
               onChange={handlePhoneChange}
               placeholder="טלפון"
               disabled={!isEditing}
+              ref={phoneRef}
             />
           </div>
         </div>
@@ -495,19 +413,23 @@ const Customer = () => {
               </thead>
               <tbody>
                 {formData.phones.map((phone, index) => (
-                  <tr key={phone._id}>
+                  <tr key={phone._id || phone.id}>
                     <th scope="row" className="py-0">
                       {index + 1}
                     </th>
                     <td className="py-0">{phone.num}</td>
                     <td className="py-0">
-                      <span
-                        className="text-danger"
-                        style={{ cursor: "pointer" }}
-                        onClick={() => handleDeletePhone(phone._id)}
-                      >
-                        {isEditing && <BsFillTrashFill />}
-                      </span>
+                      {isEditing && (
+                        <span
+                          className="text-danger"
+                          style={{ cursor: "pointer" }}
+                          onClick={() =>
+                            handleDeletePhone(phone._id || phone.id)
+                          }
+                        >
+                          <BsFillTrashFill />
+                        </span>
+                      )}
                     </td>
                   </tr>
                 ))}
@@ -531,7 +453,7 @@ const Customer = () => {
             ></textarea>
           </div>
         </div>
-
+        <div className="text-primary col-md-1 ms-3">פרטי הוספה:</div>
         <div className="col-md-3">
           <div className="input-group has-validation">
             <span className="input-group-text">
@@ -542,6 +464,7 @@ const Customer = () => {
               className="form-control"
               id="add_date"
               placeholder="תאריך הוספה"
+              value={formData.addDate || ""}
               disabled
             />
           </div>
@@ -556,10 +479,46 @@ const Customer = () => {
               className="form-control"
               id="add_user"
               placeholder="נוסף על ידי"
+              value={formData.addedBy || ""}
               disabled
             />
           </div>
         </div>
+        {formData.updateDate && formData.updateBy && (
+          <>
+            <div className="text-primary col-md-1">פרטי עדכון:</div>
+            <div className="col-md-3">
+              <div className="input-group has-validation">
+                <span className="input-group-text">
+                  <BsCalendar2WeekFill />
+                </span>
+                <input
+                  type="text"
+                  className="form-control"
+                  id="add_date"
+                  placeholder="תאריך עדכון"
+                  value={formData.updateDate || ""}
+                  disabled
+                />
+              </div>
+            </div>
+            <div className="col-md-3">
+              <div className="input-group has-validation">
+                <span className="input-group-text">
+                  <BsPersonFill />
+                </span>
+                <input
+                  type="text"
+                  className="form-control"
+                  id="add_user"
+                  placeholder="עודכן על ידי"
+                  value={formData.updateBy || ""}
+                  disabled
+                />
+              </div>
+            </div>
+          </>
+        )}
 
         <div className="col-12 text-end">
           {isEditing ? (

@@ -8,31 +8,57 @@ const { Office, User } = require("../Models/OfficeSchema");
 const router = express.Router();
 router.use(cookieParser());
 
+// Check if an office with the same email already exists
+router.post("/checkemail", async (req, res) => {
+  const { email } = req.body;
+
+  const db = mongoose.connection.useDb("offices");
+  const OfficeModel = db.model("Office", Office.schema);
+
+  const existingOffice = await OfficeModel.findOne({ email });
+  if (existingOffice) {
+    return res.status(400).json({ success: false, message: "Email exists" });
+  } else {
+    return res
+      .status(200)
+      .json({ success: true, message: "Email is available" });
+  }
+});
+
 //Register Route
 router.post("/register", async (req, res) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
   try {
     const { office, user } = req.body;
 
     const db = mongoose.connection.useDb("offices");
-
     const OfficeModel = db.model("Office", Office.schema);
+    const UserModel = db.model("User", User.schema);
+
     const newOffice = new OfficeModel({ ...office });
-    const savedOffice = await newOffice.save();
+    const savedOffice = await newOffice.save({ session });
 
     const hashedPassword = await bcrypt.hash(user.password, 10);
 
-    const UserModel = db.model("User", User.schema);
     const newUser = new UserModel({
       ...user,
       office_id: savedOffice._id,
       password: hashedPassword,
     });
-    await newUser.save();
+    await newUser.save({ session });
+
+    await session.commitTransaction();
+    session.endSession();
 
     res
       .status(201)
       .json({ success: true, message: "Data saved successfully!" });
   } catch (error) {
+    await session.abortTransaction();
+    session.endSession();
+
     console.error("Error saving data:", error);
     res.status(500).json({ success: false, message: "Failed to save data." });
   }

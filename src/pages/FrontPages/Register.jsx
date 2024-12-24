@@ -1,26 +1,27 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import RegisterOffice from "./RegisterOffice";
 import RegisterUser from "./RegisterUser";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import GlobalContext from "../../Hooks/GlobalContext";
 
 const Register = () => {
   const [page, setPage] = useState(1);
   const [office, setOffice] = useState(null);
   const [user, setUser] = useState(null);
+  const navigate = useNavigate();
+  const { ShowToast } = useContext(GlobalContext);
 
   const handleSubmit = async () => {
     try {
-      const response = await axios.post(
-        "http://localhost:3500/api/office/register",
-        {
-          office,
-          user,
-        }
-      );
-
-      console.log("Data submitted successfully:", response.data);
+      await axios.post("http://localhost:3500/api/office/register", {
+        office,
+        user,
+      });
+      ShowToast(true, "משתמש נרשם בהצלחה");
+      navigate("/login");
     } catch (error) {
-      console.error("Error submitting data:", error);
+      ShowToast(false, "שגיאה בהרשמה");
     }
   };
 

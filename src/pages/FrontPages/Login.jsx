@@ -61,9 +61,10 @@ const Login = () => {
               type="email"
               placeholder="אימייל"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => setEmail(e.target.value.toLowerCase())}
               required
-              autoComplete="false"
+              autoComplete="email"
+              name="email"
             />
           </div>
           <div className="registration-login-form-group">
@@ -74,7 +75,8 @@ const Login = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                autoComplete="false"
+                autoComplete="current-password"
+                name="password"
               />
               <span
                 type="button"

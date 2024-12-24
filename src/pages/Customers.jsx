@@ -1,6 +1,5 @@
 import { useState, useEffect, useContext } from "react";
 import axios from "axios";
-import Toast from "../components/Toast";
 import GlobalContext from "../Hooks/GlobalContext";
 import { Link } from "react-router-dom";
 import { BsFillPersonPlusFill } from "react-icons/bs";
@@ -32,21 +31,35 @@ const Customers = () => {
   const [sortOrder, setSortOrder] = useState("noSort");
   const [expandedCards, setExpandedCards] = useState({});
   const [displayCards, setDisplayCards] = useState(true);
-  const { toastVisible, setToastVisible, setToastResult, setToastMessage } =
-    useContext(GlobalContext);
+  const { ShowToast, officeDetails } = useContext(GlobalContext);
 
   useEffect(() => {
     const fetchCustomers = async () => {
+      console.log(officeDetails);
+      if (!officeDetails._id) {
+        ShowToast(false, "מזהה משרד חסר");
+        return;
+      }
+      const officeId = officeDetails._id;
       try {
-        const response = await axios.get("http://localhost:3500/api/people");
-        setCustomers(response.data);
+        const response = await axios.post(
+          "http://localhost:3500/api/clients",
+          { officeId },
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        setCustomers(response.data.clients);
       } catch (err) {
-        console.error("טעינת הנתונים נכשלה:", err);
+        ShowToast(false, "שגיאה בטעינת הלקוחות");
       }
     };
 
     fetchCustomers();
-  }, []);
+  }, [officeDetails._id]);
 
   const toggleCard = (id) => {
     setExpandedCards((prevState) => ({
@@ -96,7 +109,6 @@ const Customers = () => {
 
   return (
     <div className="container">
-      {toastVisible && <Toast />}
       <h2 className="text-primary">הצגת אנשים</h2>
       <div className="row mb-4">
         <div className="col-md-2 d-grid">
@@ -147,7 +159,7 @@ const Customers = () => {
                       <h5 className="fw-bold text-white mb-0">
                         <Link
                           to="/client"
-                          state={{ customerId: customer._id }}
+                          state={{ customer }}
                           className="text-white text-decoration-none"
                         >
                           {customer.fname} {customer.mname} {customer.lname}
@@ -267,7 +279,8 @@ const Customers = () => {
                         <tr>
                           <td className="fw-bold">נוסף על ידי:</td>
                           <td className="text-primary">
-                            {customer.addedBy} בתאריך: {customer.addDate}
+                            {customer.addedBy} <br />
+                            ב: {customer.addDate}
                           </td>
                         </tr>
                       )}
@@ -308,7 +321,7 @@ const Customers = () => {
                 <td className="align-middle">
                   <Link
                     to="/client"
-                    state={{ customerId: customer._id }}
+                    state={{ customer }}
                     className="text-dark fw-bold text-decoration-none"
                   >
                     {customer.fname} {customer.mname} {customer.lname}

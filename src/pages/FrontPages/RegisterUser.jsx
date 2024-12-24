@@ -1,7 +1,6 @@
 import React, { useState, useContext, useEffect, useRef } from "react";
-import axios from "axios";
-import Toast from "../../components/Toast";
 import GlobalContext from "../../Hooks/GlobalContext";
+import { Link } from "react-router-dom";
 import {
   BsBuildingsFill,
   BsCalendar2WeekFill,
@@ -15,10 +14,11 @@ import {
   BsPersonWorkspace,
   BsSignpost2Fill,
   BsAsterisk,
+  BsFillTrash3Fill,
 } from "react-icons/bs";
-import { data, Link } from "react-router-dom";
 
 const RegisterUser = ({ setPage, user, setUser, handleSubmit }) => {
+  const { ShowToast } = useContext(GlobalContext);
   const InitializeUser = () => {
     return {
       office_id: "",
@@ -29,7 +29,7 @@ const RegisterUser = ({ setPage, user, setUser, handleSubmit }) => {
       idType: 1,
       id: 0,
       role: "",
-      bar_id: "",
+      bar_id: 0,
       state: "ישראל",
       city: "",
       address: "",
@@ -159,16 +159,15 @@ const RegisterUser = ({ setPage, user, setUser, handleSubmit }) => {
 
   useEffect(() => {
     if (!user) setUser(InitializeUser);
-  }, [setUser]);
+  }, [user, setUser]);
 
   const [phone, setPhone] = useState({ type: 1, num: "", note: "" });
-  const { toastAttributes, setToastAttributes } = useContext(GlobalContext);
 
   const handleInputChange = (e) => {
     const { id, value } = e.target;
     setUser((prevUser) => ({
       ...prevUser,
-      [id]: value,
+      [id]: id === "email" ? value.toLowerCase() : value,
     }));
   };
 
@@ -199,23 +198,12 @@ const RegisterUser = ({ setPage, user, setUser, handleSubmit }) => {
     }));
   };
 
-  const ShowToast = (result, message) => {
-    const on = { visible: true, result: result, body: message };
-    const off = { visible: false, result: false, body: "" };
-
-    setToastAttributes(on);
-
-    setTimeout(() => {
-      setToastAttributes(off);
-    }, 3000);
-  };
-
   if (!user) {
     return <div>Loading...</div>;
   }
   return (
     <div className="">
-      {toastAttributes.visible && <Toast />}
+      {/* {toastAttributes.visible && <Toast />} */}
       <header className="header">
         <h2>יצירת משרד חדש</h2>
       </header>
@@ -349,7 +337,7 @@ const RegisterUser = ({ setPage, user, setUser, handleSubmit }) => {
                 <BsPersonWorkspace />
               </span>
               <input
-                type="text"
+                type="number"
                 className="form-control"
                 id="bar_id"
                 value={user.bar_id || ""}
@@ -468,7 +456,7 @@ const RegisterUser = ({ setPage, user, setUser, handleSubmit }) => {
                 <BsFillTelephoneFill />
               </span>
               <input
-                type="text"
+                type="number"
                 className="form-control text-end"
                 id="num"
                 value={phone.num}
@@ -490,6 +478,7 @@ const RegisterUser = ({ setPage, user, setUser, handleSubmit }) => {
                 value={phone.note}
                 onChange={handlePhoneChange}
                 placeholder="הערה לטלפון"
+                autoComplete="off"
               />
             </div>
           </div>
@@ -532,7 +521,7 @@ const RegisterUser = ({ setPage, user, setUser, handleSubmit }) => {
                           style={{ cursor: "pointer" }}
                           onClick={() => handleDeletePhone(phone.id)}
                         >
-                          <i className="bi bi-trash3-fill fs-7"></i>
+                          <BsFillTrash3Fill />
                         </span>
                       </td>
                     </tr>
@@ -553,6 +542,7 @@ const RegisterUser = ({ setPage, user, setUser, handleSubmit }) => {
                 onChange={handleInputChange}
                 rows="3"
                 placeholder="הערות"
+                autoComplete="off"
               ></textarea>
             </div>
           </div>
@@ -570,6 +560,7 @@ const RegisterUser = ({ setPage, user, setUser, handleSubmit }) => {
                   onChange={handleInputChange}
                   placeholder="סיסמת משתמש אישית"
                   ref={passwordRef}
+                  autoComplete="new-password"
                 ></input>
               </div>
             </div>
@@ -586,6 +577,7 @@ const RegisterUser = ({ setPage, user, setUser, handleSubmit }) => {
                   onChange={handleInputChange}
                   placeholder="אימות סיסמה"
                   ref={confirmPasswordRef}
+                  autoComplete="new-password"
                 ></input>
               </div>
             </div>

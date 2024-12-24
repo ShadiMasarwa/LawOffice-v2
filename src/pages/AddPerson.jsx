@@ -1,10 +1,8 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useRef } from "react";
 import axios from "axios";
-import Toast from "../components/Toast";
 import GlobalContext from "../Hooks/GlobalContext";
 import {
   BsBuildingsFill,
-  BsCalendar2WeekFill,
   BsEnvelopeAtFill,
   BsFillJournalBookmarkFill,
   BsFillPersonVcardFill,
@@ -36,13 +34,15 @@ const AddPerson = () => {
       notes: "",
       addDate: "",
       addedBy: "",
+      updateDate: null,
+      updateBy: null,
     };
   };
-
+  const fnameRef = useRef();
   const [client, setClient] = useState(InitializeClient);
-
   const [phone, setPhone] = useState({ type: 1, num: "", note: "" });
-  const { toastAttributes, setToastAttributes } = useContext(GlobalContext);
+  const { ShowToast, officeDetails, userDetails, accessToken } =
+    useContext(GlobalContext);
 
   const handleInputChange = (e) => {
     const { id, value } = e.target;
@@ -79,54 +79,33 @@ const AddPerson = () => {
     }));
   };
 
-  const ShowToast = (result, message) => {
-    const on = { visible: true, result: result, body: message };
-    const off = { visible: false, result: false, body: "" };
-
-    setToastAttributes(on);
-
-    setTimeout(() => {
-      setToastAttributes(off);
-    }, 3000);
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!client.fname.trim()) {
       ShowToast(0, "שם פרטי לא יכול להיות ריק");
-      document.getElementById("fname").focus();
+      fnameRef.current.focus();
       return;
     }
-    const now = new Date();
-    const options = { timeZone: "Asia/Jerusalem" };
-    const formatter = new Intl.DateTimeFormat("en-GB", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: false,
-      ...options,
-    });
-    const formattedDate = formatter.format(now);
-    const newClient = {
-      ...client,
-      addDate: formattedDate,
-      addedBy: "Shadi",
-    };
-    const updatedClient = {
-      ...newClient,
-      phones: newClient.phones.map(({ id, ...info }) => info),
-    };
+
     try {
-      const response = await axios.post(
-        "http://localhost:3500/api/people",
-        updatedClient
+      await axios.post(
+        "http://localhost:3500/api/clients/newclient",
+        {
+          client,
+          office_id: officeDetails._id,
+          user_id: userDetails._id,
+          accessToken,
+        },
+        {
+          headers: { Authorization: `Bearer ${accessToken}` },
+        }
       );
+
       ShowToast(1, `(${client.fname} ${client.lname}) נשמר בהצלחה`);
       setClient(InitializeClient);
     } catch (error) {
+      console.error("Error saving client:", error);
       ShowToast(
         0,
         `אירעה שגיאה בעת שמירת (${client.fname} ${client.lname}) למאגר נתונים!!`
@@ -135,14 +114,9 @@ const AddPerson = () => {
   };
 
   return (
-    <div className="container">
-      {toastAttributes.visible && <Toast />}
+    <>
       <h2 className="text-primary">הוספת אנשים</h2>
-      <form
-        className="row g-3 needs-validation"
-        noValidate
-        onSubmit={handleSubmit}
-      >
+      <form className="row g-3 " noValidate onSubmit={handleSubmit}>
         <div className="col-md-3">
           <div className="input-group has-validation">
             <span className="input-group-text">
@@ -152,10 +126,10 @@ const AddPerson = () => {
               type="text"
               className="form-control"
               id="fname"
+              ref={fnameRef}
               value={client.fname || ""}
               onChange={handleInputChange}
               placeholder="שם פרטי/חברה"
-              required
             />
           </div>
         </div>
@@ -300,7 +274,6 @@ const AddPerson = () => {
               id="city"
               value={client.city || ""}
               onChange={handleInputChange}
-              required
               placeholder="עיר"
             />
             <div className="invalid-feedback">יש להכניס שם עיר.</div>
@@ -468,43 +441,13 @@ const AddPerson = () => {
             ></textarea>
           </div>
         </div>
-
-        <div className="col-md-3">
-          <div className="input-group has-validation">
-            <span className="input-group-text">
-              <BsCalendar2WeekFill />
-            </span>
-            <input
-              type="text"
-              className="form-control"
-              id="add_date"
-              placeholder="תאריך הוספה"
-              disabled
-            />
-          </div>
-        </div>
-        <div className="col-md-3">
-          <div className="input-group has-validation">
-            <span className="input-group-text">
-              <BsPersonFill />
-            </span>
-            <input
-              type="text"
-              className="form-control"
-              id="add_user"
-              placeholder="נוסף על ידי"
-              disabled
-            />
-          </div>
-        </div>
-
         <div className="col-12 text-end">
           <button className="btn btn-primary" type="submit">
             הוספה
           </button>
         </div>
       </form>
-    </div>
+    </>
   );
 };
 

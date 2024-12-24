@@ -7,7 +7,6 @@ import Customer from "../pages/Customer";
 import Files from "../pages/Files";
 import Manage from "../pages/Manage";
 import Calendar from "../pages/Calendar";
-// import Footer from "../components/Footer";
 import Tasks from "../pages/Tasks";
 import Navbar from "../components/Navbar";
 import ProtectedRoute from "./ProtectedRoute";

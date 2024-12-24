@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 // Office Schema
 const OfficeSchema = new mongoose.Schema({
   name: { type: String, required: true },
-  email: { type: String, required: true },
+  email: { type: String, required: true, unique: true },
   phones: [
     {
       type: { type: Number, required: true },

@@ -1,5 +1,5 @@
 :root {
-  --main-color: #173afc;
+  --main-color: #0d6efd;
 }
 
 .navbar {
@@ -33,7 +33,7 @@
   top: 8vh;
   right: -100%;
   transition: 850ms;
-  z-index: 2;
+  z-index: 999;
 }
 
 .nav_menu .sub_menu {

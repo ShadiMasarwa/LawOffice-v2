@@ -1,25 +1,21 @@
 import React, { useState, useContext, useEffect, useRef } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 import GlobalContext from "../../Hooks/GlobalContext";
+import axios from "axios";
 
 import {
   BsBuildingsFill,
-  BsCalendar2WeekFill,
   BsEnvelopeAtFill,
   BsFillJournalBookmarkFill,
-  BsFillPersonVcardFill,
   BsFillSignpostFill,
   BsFillTelephoneFill,
-  BsGenderTrans,
   BsPersonFill,
-  BsPersonWorkspace,
   BsSignpost2Fill,
   BsFillTrash3Fill,
 } from "react-icons/bs";
-import Toast from "../../components/Toast";
 
 const RegisterOffice = ({ setPage, office, setOffice }) => {
+  const { ShowToast } = useContext(GlobalContext);
   const navigate = useNavigate();
 
   const InitializeOffice = () => {
@@ -52,7 +48,26 @@ const RegisterOffice = ({ setPage, office, setOffice }) => {
     return patt.test(e);
   };
 
-  const ValidateForm = () => {
+  const AvailableEmail = async (email) => {
+    try {
+      const response = await axios.post(
+        "http://localhost:3500/api/office/checkemail",
+        { email }
+      );
+      return response.data.success;
+    } catch (error) {
+      if (error.response && error.response.status === 400) {
+        console.log("Email already exists:", error.response.data.message);
+        return false;
+      }
+      console.error("Error submitting data:", error);
+      throw new Error(
+        "An unexpected error occurred while checking email availability."
+      );
+    }
+  };
+
+  const ValidateForm = async () => {
     if (office.name.trim() === "") {
       ShowToast(0, "לא הוכנס שם משרד");
       nameRef.current.focus();
@@ -65,6 +80,11 @@ const RegisterOffice = ({ setPage, office, setOffice }) => {
     }
     if (!validEmail(office.email)) {
       ShowToast(0, "דואר אלקטרוני לא תקין");
+      emailRef.current.focus();
+      return;
+    }
+    if (!(await AvailableEmail(office.email.trim().toLowerCase()))) {
+      ShowToast(0, "דואר אלקטרוני כבר קיים במערכת");
       emailRef.current.focus();
       return;
     }
@@ -92,14 +112,16 @@ const RegisterOffice = ({ setPage, office, setOffice }) => {
   };
   useEffect(() => {
     if (!office) setOffice(InitializeOffice());
-  }, [setOffice]);
+  }, [office, setOffice]);
 
-  const [officePhone, setOfficePhone] = useState({
-    type: 1,
-    num: "",
-    note: "",
-  });
-  const { toastAttributes, setToastAttributes } = useContext(GlobalContext);
+  const [officePhone, setOfficePhone] = useState(
+    {
+      type: 1,
+      num: "",
+      note: "",
+    },
+    [office]
+  );
 
   if (!office) {
     return <div>Loading...</div>;
@@ -109,7 +131,7 @@ const RegisterOffice = ({ setPage, office, setOffice }) => {
     const { id, value } = e.target;
     setOffice((prevOffice) => ({
       ...prevOffice,
-      [id]: value,
+      [id]: id === "email" ? value.toLowerCase() : value,
     }));
   };
 
@@ -140,25 +162,12 @@ const RegisterOffice = ({ setPage, office, setOffice }) => {
     }));
   };
 
-  const ShowToast = (result, message) => {
-    const on = { visible: true, result: result, body: message };
-    const off = { visible: false, result: false, body: "" };
-
-    setToastAttributes(on);
-
-    setTimeout(() => {
-      setToastAttributes(off);
-    }, 3000);
-  };
-
   const handleCancel = () => {
     navigate("/");
   };
 
   return (
     <div className="">
-      {toastAttributes.visible && <Toast />}
-
       <header className="header">
         <h2>יצירת משרד חדש</h2>
       </header>

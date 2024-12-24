@@ -11,9 +11,10 @@ import logo from "../images/scale.png";
 import Footer from "./Footer";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { OverlayTrigger, Tooltip } from "react-bootstrap";
 
 function Navbar() {
-  const [sidebar, setSidebar] = useState(false);
+  const [sidebar, setSidebar] = useState(true);
   const showSidebar = () => setSidebar(!sidebar);
   const {
     userDetails,
@@ -29,10 +30,8 @@ function Navbar() {
       const response = await axios.post("/logout");
       const data = response.data;
       if (data.success) {
-        // Clear user and office data from state
         setUserDetails(null);
         setOfficeDetails(null);
-        // Clear the access token (e.g., from localStorage or state)
         setAccessToken(null);
         navigate("/");
       } else {
@@ -45,7 +44,7 @@ function Navbar() {
   return (
     <>
       {/* Header */}
-      <div className={`${style.navbar} d-flex justify-content-between`}>
+      <div className={`${style.navbar} d-flex justify-content-between `}>
         <div className="d-flex align-items-center">
           <Link to="#" className={style.menu_bars}>
             {sidebar ? (
@@ -60,15 +59,27 @@ function Navbar() {
           </div>
         </div>
         <div className="text-white pe-2 fs-7">
-          <span className="text-warning">משרד:</span> {officeDetails.name}
-          <span className="text-warning"> משתמש:</span> {userDetails.fname}{" "}
-          {userDetails.lname}
-          <span className="text-danger" onClick={logout}>
-            <IoMdLogOut />
-          </span>
+          <span className="text-warning fw-bold">משרד:</span>{" "}
+          {officeDetails.name}
+          <span className="text-warning fw-bold"> משתמש:</span>{" "}
+          {userDetails.fname} {userDetails.lname}
+          <OverlayTrigger
+            placement="right"
+            overlay={<Tooltip id="tooltip-top">התנתק</Tooltip>}
+          >
+            <span
+              className="text-danger"
+              style={{ cursor: "pointer" }}
+              onClick={logout}
+            >
+              <IoMdLogOut />
+            </span>
+          </OverlayTrigger>
         </div>{" "}
       </div>
-      <Outlet />
+      <div className="container z-index-1">
+        <Outlet />
+      </div>
       <nav
         className={
           sidebar ? `${style.nav_menu} ${style.active}` : style.nav_menu
@@ -91,7 +102,6 @@ function Navbar() {
               );
             })}
           </ul>
-          <div className="">{userDetails.name}</div>
         </div>
       </nav>
       <Footer />

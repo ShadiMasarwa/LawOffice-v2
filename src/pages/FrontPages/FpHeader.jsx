@@ -1,26 +1,44 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import Logo from "../../images/scale.png";
 import { FaBars } from "react-icons/fa";
 import { AiOutlineClose } from "react-icons/ai";
+import { useNavigate } from "react-router-dom";
+
 const Header = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const currentPath = location.pathname;
   return (
     <div className="header_container">
       <Link to="/" className="header_logo">
         <img src={Logo} alt="logo" />
-        <div className="header_sitename">משפט נט - ניהול משרד עורך דין</div>
+        <div className="header_sitename">
+          משפט נט - אתר לניהול משרד עורך דין
+        </div>
       </Link>
 
       <div className="header_menu">
-        <Link to="login" className="header_menu_item">
+        <button
+          className="btn btn-outline-primary"
+          onClick={() => navigate("/login")}
+        >
           כניסה
-        </Link>
-        <Link to="/" className="header_menu_item">
-          יציאה
-        </Link>
-        <Link to="register" className="header_menu_item">
+        </button>
+        {(currentPath === "/login" || currentPath === "/register") && (
+          <button
+            className="btn btn-outline-primary"
+            onClick={() => navigate("/")}
+          >
+            יציאה
+          </button>
+        )}
+        <button
+          className="btn btn-outline-primary"
+          onClick={() => navigate("/register")}
+        >
           הרשמה
-        </Link>
+        </button>
         <button className="header_menu_toggle">
           <FaBars />
           <AiOutlineClose />
