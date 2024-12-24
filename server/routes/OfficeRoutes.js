@@ -37,11 +37,14 @@ router.post("/register", async (req, res) => {
     const OfficeModel = db.model("Office", Office.schema);
     const UserModel = db.model("User", User.schema);
 
+    // Save the office
     const newOffice = new OfficeModel({ ...office });
     const savedOffice = await newOffice.save({ session });
 
+    // Hash the user password
     const hashedPassword = await bcrypt.hash(user.password, 10);
 
+    // Save the user with the office ID
     const newUser = new UserModel({
       ...user,
       office_id: savedOffice._id,
@@ -49,6 +52,7 @@ router.post("/register", async (req, res) => {
     });
     await newUser.save({ session });
 
+    // Commit the transaction
     await session.commitTransaction();
     session.endSession();
 
@@ -181,6 +185,42 @@ router.post("/logout", (req, res) => {
     sameSite: "Strict",
   });
   res.status(200).json({ success: true, message: "התנתקת בהצלחה" });
+});
+
+router.get("/username/:id", async (req, res) => {
+  const { id } = req.params;
+
+  if (!id) {
+    return res
+      .status(400)
+      .json({ success: false, message: "User ID is required" });
+  }
+
+  try {
+    // Use the "offices" database
+    const userDb = mongoose.connection.useDb("offices");
+
+    // Bind the User model to the database
+    const UserModel = userDb.model("User", User.schema);
+
+    // Find the user by ID
+    const user = await UserModel.findById(id).select("fname lname");
+
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
+    }
+
+    // Concatenate first name and last name
+    const fullName = `${user.fname} ${user.lname}`;
+
+    // Send the response
+    res.status(200).send(fullName);
+  } catch (error) {
+    console.error("Error fetching user:", error);
+    res.status(500).json({ success: false, message: "Server error", error });
+  }
 });
 
 module.exports = router;

@@ -33,7 +33,6 @@ const Customer = () => {
     if (location.state?.customer) {
       setCustomer(location.state.customer);
       setFormData(location.state.customer);
-      console.log(location.state.customer);
     }
   }, [location.state?.customer]);
 
@@ -78,8 +77,9 @@ const Customer = () => {
     }
 
     try {
+      console.log("customer._id", customer._id);
       await axios.put(
-        `http://localhost:3500/api/clients/updateclient/${customer._Id}`,
+        `http://localhost:3500/api/clients/updateclient/${formData._id}`,
         {
           formData,
           userDetails: { _id: userDetails._id },

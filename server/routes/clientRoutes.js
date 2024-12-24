@@ -63,42 +63,32 @@ router.post("/", async (req, res) => {
       new mongoose.Schema({}, { strict: false })
     );
 
-    const clients = await Client.find().lean();
+    const clients = await Client.find();
 
-    const updatedClients = await Promise.all(
-      clients.map(async (client) => {
-        const userDb = mongoose.connection.useDb("offices");
-        const UserCol = userDb.model("User", User.schema);
+    // const updatedClients = await Promise.all(
+    //   clients.map(async (client) => {
+    //     const userDb = mongoose.connection.useDb("offices");
+    //     const UserCol = userDb.model("User", User.schema);
 
-        const addingUser = await UserCol.findById(client.addedBy).select(
-          "fname lname"
-        );
-        if (addingUser) {
-          client.addedBy = `${addingUser.fname} ${addingUser.lname}`;
-        }
+    //     const addingUser = await UserCol.findById(client.addedBy).select(
+    //       "fname lname"
+    //     );
+    //     if (addingUser) {
+    //       client.addedBy = `${addingUser.fname} ${addingUser.lname}`;
+    //     }
 
-        if (client.updateBy) {
-          const updatingUser = await UserCol.findById(client.updateBy).select(
-            "fname lname"
-          );
-          if (updatingUser) {
-            client.updateBy = `${updatingUser.fname} ${updatingUser.lname}`;
-          }
-        }
-
-        if (client.addDate) {
-          client.addDate = moment(client.addDate).format("DD/MM/YYYY, HH:mm");
-        }
-        if (client.updateDate) {
-          client.updateDate = moment(client.updateDate).format(
-            "DD/MM/YYYY, HH:mm"
-          );
-        }
-
-        return client;
-      })
-    );
-    res.status(200).json({ success: true, clients: updatedClients });
+    //     if (client.updateBy) {
+    //       const updatingUser = await UserCol.findById(client.updateBy).select(
+    //         "fname lname"
+    //       );
+    //       if (updatingUser) {
+    //         client.updateBy = `${updatingUser.fname} ${updatingUser.lname}`;
+    //       }
+    //     }
+    //     return client;
+    //   })
+    // );
+    res.status(200).json({ success: true, clients });
   } catch (error) {
     console.error("Error fetching clients:", error);
     res.status(500).json({ success: false, message: "Server error" });
@@ -109,7 +99,13 @@ router.put("/updateclient/:id", async (req, res) => {
   try {
     const { id } = req.params; // Client ID from params
     const { formData, userDetails, officeDetails } = req.body; // Data from body
+    console.log("Received ID:", id); // Debug log
 
+    if (!id || id === "undefined") {
+      return res
+        .status(400)
+        .json({ message: "Invalid or missing ID parameter" });
+    }
     // Use the correct database dynamically
     const dbName = `office_${officeDetails._id}`;
     const db = mongoose.connection.useDb(dbName); // Use the correct database

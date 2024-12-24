@@ -25,6 +25,29 @@ const phoneTypeMap = {
   6: "אחר",
 };
 
+const UserName = ({ userId }) => {
+  const [userName, setUserName] = useState("");
+
+  useEffect(() => {
+    const fetchUserName = async () => {
+      if (userId) {
+        try {
+          const response = await axios.get(
+            `http://localhost:3500/api/office/username/${userId}`
+          );
+          setUserName(response.data);
+        } catch (err) {
+          console.error("Error fetching user name:", err);
+          setUserName(""); // Fallback to empty string on error
+        }
+      }
+    };
+
+    fetchUserName();
+  }, [userId]);
+  return <>{userName}</>;
+};
+
 const Customers = () => {
   const [customers, setCustomers] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -279,7 +302,7 @@ const Customers = () => {
                         <tr>
                           <td className="fw-bold">נוסף על ידי:</td>
                           <td className="text-primary">
-                            {customer.addedBy} <br />
+                            <UserName userId={customer.addedBy} /> <br />
                             ב: {customer.addDate}
                           </td>
                         </tr>
