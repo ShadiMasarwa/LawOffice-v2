@@ -2,11 +2,10 @@ import React, { useState, useEffect, useContext, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
 import GlobalContext from "../Hooks/GlobalContext";
-import UserName from "../components/UserName";
 import { formatDateTime } from "../utils.js";
+import UserName from "../components/UserName";
 import {
   BsBuildingsFill,
-  BsCalendar2WeekFill,
   BsEnvelopeAtFill,
   BsFillJournalBookmarkFill,
   BsFillPersonVcardFill,
@@ -455,72 +454,39 @@ const Customer = () => {
             ></textarea>
           </div>
         </div>
-        <div className="text-primary col-md-1 ms-3">פרטי הוספה:</div>
-        <div className="col-md-3">
-          <div className="input-group has-validation">
-            <span className="input-group-text">
-              <BsCalendar2WeekFill />
-            </span>
-            <input
-              type="text"
-              className="form-control"
-              id="add_date"
-              placeholder="תאריך הוספה"
-              value={formatDateTime(formData.addDate) || ""}
-              disabled
-            />
-          </div>
-        </div>
-        <div className="col-md-3">
-          <div className="input-group has-validation">
-            <span className="input-group-text">
-              <BsPersonFill />
-            </span>
-            <input
-              type="text"
-              className="form-control"
-              id="add_user"
-              placeholder="נוסף על ידי"
-              value={<UserName userId={formData.addedBy} /> || ""}
-              disabled
-            />
-          </div>
-        </div>
-        {formData.updateDate && formData.updateBy && (
-          <>
-            <div className="text-primary col-md-1">עדכון אחרון:</div>
-            <div className="col-md-3">
-              <div className="input-group has-validation">
-                <span className="input-group-text">
-                  <BsCalendar2WeekFill />
-                </span>
-                <input
-                  type="text"
-                  className="form-control"
-                  id="add_date"
-                  placeholder="תאריך עדכון"
-                  value={formatDateTime(formData.updateDate) || ""}
-                  disabled
-                />
-              </div>
-            </div>
-            <div className="col-md-3">
-              <div className="input-group has-validation">
-                <span className="input-group-text">
-                  <BsPersonFill />
-                </span>
-                <input
-                  type="text"
-                  className="form-control"
-                  id="add_user"
-                  placeholder="עודכן על ידי"
-                  value={<UserName userId={formData.updateBy} /> || ""}
-                  disabled
-                />
-              </div>
-            </div>
-          </>
-        )}
+        <table className="table table-striped w-50 ms-3">
+          <thead>
+            <tr>
+              <th scope="col" className="py-0">
+                פעולה
+              </th>
+              <th scope="col" className="py-0">
+                מבצע
+              </th>
+              <th scope="col" className="py-0">
+                יום ושעה
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td className="py-0">הוספה</td>
+              <td className="py-0">
+                <UserName userId={formData.addedBy} />
+              </td>
+              <td className="py-0">{formatDateTime(formData.addDate)}</td>
+            </tr>
+            {formData.updateDate && formData.updateBy && (
+              <tr>
+                <td className="py-0">עדכון</td>
+                <td className="py-0">
+                  <UserName userId={formData.updateBy} />
+                </td>
+                <td className="py-0">{formatDateTime(formData.updateDate)}</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
 
         <div className="col-12 text-end">
           {isEditing ? (

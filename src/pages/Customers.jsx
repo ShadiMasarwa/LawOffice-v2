@@ -4,7 +4,7 @@ import GlobalContext from "../Hooks/GlobalContext";
 import { Link } from "react-router-dom";
 import { BsFillPersonPlusFill } from "react-icons/bs";
 import { formatDateTime } from "../utils.js";
-import UserName from "../components/UserName";
+import UserName from "../components/UserName.jsx";
 
 const genderMap = {
   1: "נקבה",
@@ -281,7 +281,8 @@ const Customers = () => {
                         <tr>
                           <td className="fw-bold">נוסף על ידי:</td>
                           <td className="text-primary">
-                            <UserName userId={customer.addedBy} /> <br />
+                            <UserName userId={customer.addedBy} />
+                            <br />
                             ב: {formatDateTime(customer.addDate)}
                           </td>
                         </tr>
@@ -290,7 +291,8 @@ const Customers = () => {
                         <tr>
                           <td className="fw-bold">עדכון אחרון:</td>
                           <td className="text-primary">
-                            <UserName userId={customer.updateBy} /> <br />
+                            <UserName userId={customer.updateBy} />
+                            <br />
                             ב: {formatDateTime(customer.updateDate)}
                           </td>
                         </tr>

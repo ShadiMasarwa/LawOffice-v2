@@ -1,8 +1,11 @@
+import axios from "axios";
+import { useEffect } from "react";
+
 export const formatDateTime = (dateTime) => {
   const date = new Date(dateTime);
 
   const formattedDate = date
-    .toLocaleDateString("he-IL")
+    .toLocaleDateString("en-GB")
     .split("/")
     .map((part) => part.padStart(2, "0"))
     .join("/");
@@ -14,4 +17,18 @@ export const formatDateTime = (dateTime) => {
   });
 
   return `${formattedDate}, ${formattedTime}`;
+};
+
+export const getUserName = async (userId) => {
+  if (userId) {
+    try {
+      const response = await axios.get(
+        `http://localhost:3500/api/office/username/${userId}`
+      );
+      return response.data;
+    } catch (err) {
+      console.error("Error fetching user name:", err);
+      return "";
+    }
+  }
 };

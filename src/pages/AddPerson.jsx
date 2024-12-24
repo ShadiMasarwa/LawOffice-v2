@@ -12,6 +12,7 @@ import {
   BsPersonFill,
   BsPersonWorkspace,
   BsSignpost2Fill,
+  BsFillTrashFill,
 } from "react-icons/bs";
 
 const AddPerson = () => {
@@ -417,7 +418,7 @@ const AddPerson = () => {
                         style={{ cursor: "pointer" }}
                         onClick={() => handleDeletePhone(phone.id)}
                       >
-                        <i className="bi bi-trash3-fill fs-7"></i>
+                        <BsFillTrashFill />
                       </span>
                     </td>
                   </tr>
