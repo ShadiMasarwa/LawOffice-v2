@@ -3,6 +3,8 @@ import axios from "axios";
 import GlobalContext from "../Hooks/GlobalContext";
 import { Link } from "react-router-dom";
 import { BsFillPersonPlusFill } from "react-icons/bs";
+import { formatDateTime } from "../utils.js";
+import UserName from "../components/UserName";
 
 const genderMap = {
   1: "נקבה",
@@ -23,29 +25,6 @@ const phoneTypeMap = {
   4: "טלפון עבודה",
   5: "פקס עבודה",
   6: "אחר",
-};
-
-const UserName = ({ userId }) => {
-  const [userName, setUserName] = useState("");
-
-  useEffect(() => {
-    const fetchUserName = async () => {
-      if (userId) {
-        try {
-          const response = await axios.get(
-            `http://localhost:3500/api/office/username/${userId}`
-          );
-          setUserName(response.data);
-        } catch (err) {
-          console.error("Error fetching user name:", err);
-          setUserName(""); // Fallback to empty string on error
-        }
-      }
-    };
-
-    fetchUserName();
-  }, [userId]);
-  return <>{userName}</>;
 };
 
 const Customers = () => {
@@ -303,7 +282,16 @@ const Customers = () => {
                           <td className="fw-bold">נוסף על ידי:</td>
                           <td className="text-primary">
                             <UserName userId={customer.addedBy} /> <br />
-                            ב: {customer.addDate}
+                            ב: {formatDateTime(customer.addDate)}
+                          </td>
+                        </tr>
+                      )}
+                      {customer.updateBy && customer.updateDate && (
+                        <tr>
+                          <td className="fw-bold">עדכון אחרון:</td>
+                          <td className="text-primary">
+                            <UserName userId={customer.updateBy} /> <br />
+                            ב: {formatDateTime(customer.updateDate)}
                           </td>
                         </tr>
                       )}

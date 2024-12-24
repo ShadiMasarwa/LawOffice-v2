@@ -2,6 +2,8 @@ import React, { useState, useEffect, useContext, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
 import GlobalContext from "../Hooks/GlobalContext";
+import UserName from "../components/UserName";
+import { formatDateTime } from "../utils.js";
 import {
   BsBuildingsFill,
   BsCalendar2WeekFill,
@@ -464,7 +466,7 @@ const Customer = () => {
               className="form-control"
               id="add_date"
               placeholder="תאריך הוספה"
-              value={formData.addDate || ""}
+              value={formatDateTime(formData.addDate) || ""}
               disabled
             />
           </div>
@@ -479,14 +481,14 @@ const Customer = () => {
               className="form-control"
               id="add_user"
               placeholder="נוסף על ידי"
-              value={formData.addedBy || ""}
+              value={<UserName userId={formData.addedBy} /> || ""}
               disabled
             />
           </div>
         </div>
         {formData.updateDate && formData.updateBy && (
           <>
-            <div className="text-primary col-md-1">פרטי עדכון:</div>
+            <div className="text-primary col-md-1">עדכון אחרון:</div>
             <div className="col-md-3">
               <div className="input-group has-validation">
                 <span className="input-group-text">
@@ -497,7 +499,7 @@ const Customer = () => {
                   className="form-control"
                   id="add_date"
                   placeholder="תאריך עדכון"
-                  value={formData.updateDate || ""}
+                  value={formatDateTime(formData.updateDate) || ""}
                   disabled
                 />
               </div>
@@ -512,7 +514,7 @@ const Customer = () => {
                   className="form-control"
                   id="add_user"
                   placeholder="עודכן על ידי"
-                  value={formData.updateBy || ""}
+                  value={<UserName userId={formData.updateBy} /> || ""}
                   disabled
                 />
               </div>
