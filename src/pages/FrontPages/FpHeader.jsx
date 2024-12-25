@@ -19,26 +19,56 @@ const Header = () => {
       </Link>
 
       <div className="header_menu">
-        <button
-          className="btn btn-outline-primary"
-          onClick={() => navigate("/login")}
-        >
-          כניסה
-        </button>
-        {(currentPath === "/login" || currentPath === "/register") && (
-          <button
-            className="btn btn-outline-primary"
-            onClick={() => navigate("/")}
-          >
-            יציאה
-          </button>
+        {currentPath === "/" && (
+          <>
+            <button
+              className="btn btn-outline-primary"
+              onClick={() => navigate("/login")}
+            >
+              כניסה
+            </button>
+
+            <button
+              className="btn btn-outline-primary"
+              onClick={() => navigate("/register")}
+            >
+              הרשמה
+            </button>
+          </>
         )}
-        <button
-          className="btn btn-outline-primary"
-          onClick={() => navigate("/register")}
-        >
-          הרשמה
-        </button>
+        {currentPath === "/login" && (
+          <>
+            <button
+              className="btn btn-outline-primary"
+              onClick={() => navigate("/register")}
+            >
+              הרשמה
+            </button>
+            <button
+              className="btn btn-outline-primary"
+              onClick={() => navigate("/")}
+            >
+              מסך ראשי
+            </button>
+          </>
+        )}
+        {currentPath === "/register" && (
+          <>
+            <button
+              className="btn btn-outline-primary"
+              onClick={() => navigate("/login")}
+            >
+              כניסה
+            </button>
+            <button
+              className="btn btn-outline-primary"
+              onClick={() => navigate("/")}
+            >
+              מסך ראשי
+            </button>
+          </>
+        )}
+
         <button className="header_menu_toggle">
           <FaBars />
           <AiOutlineClose />

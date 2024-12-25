@@ -1,9 +1,7 @@
 import React from "react";
 import {
   BsFillHouseDoorFill,
-  BsFillPersonVcardFill,
   BsFillPeopleFill,
-  BsFillPersonPlusFill,
   BsFillFolderFill,
   BsCalendar2WeekFill,
   BsSpeedometer,
@@ -13,7 +11,7 @@ import {
 export const SidebarData = [
   {
     title: "בית",
-    path: "/",
+    path: "home",
     icon: <BsFillHouseDoorFill />,
     cName: ["nav_text"],
   },
@@ -25,32 +23,32 @@ export const SidebarData = [
   },
   {
     title: "תיקים",
-    path: "/showfiles",
+    path: "showfiles",
     icon: <BsFillFolderFill />,
     cName: ["nav_text"],
   },
   {
     title: "משימות",
-    path: "/tasks",
+    path: "tasks",
     icon: <BsListUl />,
     cName: ["nav_text"],
   },
   {
     title: "יומן",
-    path: "/calendar",
+    path: "calendar",
     icon: <BsCalendar2WeekFill />,
     cName: ["nav_text"],
   },
   {
     title: "כספים",
-    path: "/finance",
+    path: "finance",
     icon: <BsCurrencyExchange />,
     cName: ["nav_text"],
   },
 
   {
     title: "ניהול",
-    path: "/manage",
+    path: "manage",
     icon: <BsSpeedometer />,
     cName: ["nav_text"],
   },

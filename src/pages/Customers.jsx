@@ -1,11 +1,10 @@
 import { useState, useEffect, useContext } from "react";
-import axios from "axios";
 import GlobalContext from "../Hooks/GlobalContext";
 import { Link } from "react-router-dom";
 import { BsFillPersonPlusFill } from "react-icons/bs";
 import { formatDateTime } from "../utils.js";
 import UserName from "../components/UserName.jsx";
-
+import axiosInstance, { setAuthToken } from "../components/axiosConfig";
 const genderMap = {
   1: "נקבה",
   2: "זכר",
@@ -19,7 +18,7 @@ const idTypeMap = {
 };
 
 const phoneTypeMap = {
-  1: "נייד",
+  1: "סלולרי",
   2: "בית",
   3: "פקס בית",
   4: "טלפון עבודה",
@@ -35,17 +34,24 @@ const Customers = () => {
   const [displayCards, setDisplayCards] = useState(true);
   const { ShowToast, officeDetails } = useContext(GlobalContext);
 
+  const { accessToken } = useContext(GlobalContext);
+
+  useEffect(() => {
+    if (accessToken) {
+      setAuthToken(accessToken);
+    }
+  }, [accessToken]);
+
   useEffect(() => {
     const fetchCustomers = async () => {
-      console.log(officeDetails);
       if (!officeDetails._id) {
         ShowToast(false, "מזהה משרד חסר");
         return;
       }
       const officeId = officeDetails._id;
       try {
-        const response = await axios.post(
-          "http://localhost:3500/api/clients",
+        const response = await axiosInstance.post(
+          "/clients",
           { officeId },
           {
             headers: {
@@ -260,12 +266,14 @@ const Customers = () => {
                           </tr>
                           {customer.phones.map((phone, index) => (
                             <tr key={index}>
-                              <td className="fw-bold">
+                              <td className="fw-bold text-danger ps-3">
                                 {phoneTypeMap[phone.type]}:
                               </td>
                               <td className="text-primary">
                                 {phone.num}
-                                {phone.note && <span> ({phone.note})</span>}
+                                <span className="text-success">
+                                  {phone.note && ` (${phone.note})`}
+                                </span>
                               </td>
                             </tr>
                           ))}

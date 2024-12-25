@@ -31,7 +31,7 @@
   justify-content: start;
   position: fixed;
   top: 8vh;
-  right: -100%;
+  right: -80%;
   transition: 850ms;
   z-index: 999;
 }

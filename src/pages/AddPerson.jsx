@@ -1,6 +1,7 @@
-import React, { useState, useContext, useRef } from "react";
-import axios from "axios";
+import React, { useState, useContext, useRef, useEffect } from "react";
 import GlobalContext from "../Hooks/GlobalContext";
+import axiosInstance, { setAuthToken } from "../components/axiosConfig";
+
 import {
   BsBuildingsFill,
   BsEnvelopeAtFill,
@@ -44,6 +45,12 @@ const AddPerson = () => {
   const [phone, setPhone] = useState({ type: 1, num: "", note: "" });
   const { ShowToast, officeDetails, userDetails, accessToken } =
     useContext(GlobalContext);
+
+  useEffect(() => {
+    if (accessToken) {
+      setAuthToken(accessToken);
+    }
+  }, [accessToken]);
 
   const handleInputChange = (e) => {
     const { id, value } = e.target;
@@ -90,8 +97,8 @@ const AddPerson = () => {
     }
 
     try {
-      await axios.post(
-        "http://localhost:3500/api/clients/newclient",
+      await axiosInstance.post(
+        "/clients/newclient",
         {
           client,
           office_id: officeDetails._id,

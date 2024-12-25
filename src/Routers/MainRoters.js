@@ -10,26 +10,69 @@ import Calendar from "../pages/Calendar";
 import Tasks from "../pages/Tasks";
 import Navbar from "../components/Navbar";
 import ProtectedRoute from "./ProtectedRoute";
+import Layout from "../pages/FrontPages/FpLayout";
+import Login from "../pages/FrontPages/Login";
+import FrontPage from "../pages/FrontPages/FrontPage";
+import Rules from "../pages/FrontPages/Rules";
+import ErrorPage from "../pages/FrontPages/ErrorPage";
+import Register from "../pages/FrontPages/Register";
 
 const MainRouters = createBrowserRouter([
   {
     path: "/",
-    element: <Navbar />,
-    errorElement: <Home />,
+    errorElement: <ErrorPage />,
+    loaderElement: <div>Loading...</div>,
     children: [
       {
         index: true,
         element: (
+          <Layout>
+            <FrontPage />
+          </Layout>
+        ),
+      },
+      {
+        path: "login",
+        element: (
+          <Layout>
+            <Login />
+          </Layout>
+        ),
+      },
+
+      {
+        path: "register",
+        element: (
+          <Layout>
+            <Register />
+          </Layout>
+        ),
+      },
+      {
+        path: "rules",
+        element: (
+          <Layout>
+            <Rules />
+          </Layout>
+        ),
+      },
+      {
+        path: "home",
+        element: (
           <ProtectedRoute>
-            <Home />
+            <Navbar>
+              <Home />
+            </Navbar>
           </ProtectedRoute>
         ),
-      }, // Public route
+      }, // Protected route
       {
         path: "addClient",
         element: (
           <ProtectedRoute>
-            <AddPerson />
+            <Navbar>
+              <AddPerson />
+            </Navbar>
           </ProtectedRoute>
         ),
       },
@@ -37,7 +80,9 @@ const MainRouters = createBrowserRouter([
         path: "showClients",
         element: (
           <ProtectedRoute>
-            <Customers />
+            <Navbar>
+              <Customers />
+            </Navbar>
           </ProtectedRoute>
         ),
       },
@@ -45,7 +90,9 @@ const MainRouters = createBrowserRouter([
         path: "client",
         element: (
           <ProtectedRoute>
-            <Customer />
+            <Navbar>
+              <Customer />
+            </Navbar>
           </ProtectedRoute>
         ),
       },
@@ -53,7 +100,9 @@ const MainRouters = createBrowserRouter([
         path: "showfiles",
         element: (
           <ProtectedRoute>
-            <Files />
+            <Navbar>
+              <Files />
+            </Navbar>
           </ProtectedRoute>
         ),
       },
@@ -61,7 +110,9 @@ const MainRouters = createBrowserRouter([
         path: "calendar",
         element: (
           <ProtectedRoute>
-            <Calendar />
+            <Navbar>
+              <Calendar />
+            </Navbar>
           </ProtectedRoute>
         ),
       },
@@ -69,7 +120,9 @@ const MainRouters = createBrowserRouter([
         path: "manage",
         element: (
           <ProtectedRoute>
-            <Manage />
+            <Navbar>
+              <Manage />
+            </Navbar>
           </ProtectedRoute>
         ),
       },
@@ -77,7 +130,9 @@ const MainRouters = createBrowserRouter([
         path: "showClient",
         element: (
           <ProtectedRoute>
-            <Customer />
+            <Navbar>
+              <Customer />
+            </Navbar>
           </ProtectedRoute>
         ),
       },
@@ -85,7 +140,9 @@ const MainRouters = createBrowserRouter([
         path: "tasks",
         element: (
           <ProtectedRoute>
-            <Tasks />
+            <Navbar>
+              <Tasks />
+            </Navbar>
           </ProtectedRoute>
         ),
       },

@@ -4,6 +4,7 @@ require("dotenv").config();
 const { connectDB } = require("./config/db.js");
 const clientRoutes = require("./routes/clientRoutes.js");
 const OfficeRoutes = require("./routes/OfficeRoutes.js");
+const authMiddleware = require("./MiddleWares/authMiddleware.js");
 const app = express();
 const PORT = process.env.PORT || 3500;
 
@@ -15,7 +16,7 @@ app.use(express.json());
 connectDB();
 
 // Routes
-app.use("/api/clients", clientRoutes);
+app.use("/api/clients", authMiddleware, clientRoutes);
 app.use("/api/office", OfficeRoutes);
 
 // Start the Server

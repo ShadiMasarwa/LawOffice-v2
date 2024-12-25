@@ -40,7 +40,7 @@ const Login = () => {
 
         // Store the access token (e.g., in localStorage or state)
         setAccessToken(data.accessToken);
-        navigate("/");
+        navigate("/home");
       } else {
         console.error(data.message);
       }

@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useContext, useRef } from "react";
 import { useLocation } from "react-router-dom";
-import axios from "axios";
 import GlobalContext from "../Hooks/GlobalContext";
 import { formatDateTime } from "../utils.js";
 import UserName from "../components/UserName";
+import axiosInstance, { setAuthToken } from "../components/axiosConfig";
 import {
   BsBuildingsFill,
   BsEnvelopeAtFill,
@@ -29,6 +29,14 @@ const Customer = () => {
 
   const nameRef = useRef(null);
   const phoneRef = useRef(null);
+
+  const { accessToken } = useContext(GlobalContext);
+
+  useEffect(() => {
+    if (accessToken) {
+      setAuthToken(accessToken);
+    }
+  }, [accessToken]);
 
   useEffect(() => {
     if (location.state?.customer) {
@@ -78,15 +86,11 @@ const Customer = () => {
     }
 
     try {
-      console.log("customer._id", customer._id);
-      await axios.put(
-        `http://localhost:3500/api/clients/updateclient/${formData._id}`,
-        {
-          formData,
-          userDetails: { _id: userDetails._id },
-          officeDetails: { _id: officeDetails._id },
-        }
-      );
+      await axiosInstance.put(`/clients/updateclient/${formData._id}`, {
+        formData,
+        userDetails: { _id: userDetails._id },
+        officeDetails: { _id: officeDetails._id },
+      });
       setCustomer(formData);
       setIsEditing(false);
       ShowToast(1, "השינויים נשמרו בהצלחה");
@@ -521,9 +525,4 @@ const Customer = () => {
   );
 };
 
-{
-  /* <div className="col-md-12 d-flex justify-content-center gap-3 mt-4">
-  
-</div>; */
-}
 export default Customer;

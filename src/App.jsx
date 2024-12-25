@@ -3,7 +3,6 @@ import "./App.css";
 import { RouterProvider } from "react-router-dom";
 import GlobalContext from "./Hooks/GlobalContext";
 import Toast from "./components/Toast";
-import FPRouters from "./Routers/FPRouters";
 import MainRouters from "./Routers/MainRoters";
 
 function App() {
@@ -39,11 +38,7 @@ function App() {
       }}
     >
       <Toast />
-      {userDetails && officeDetails ? (
-        <RouterProvider router={MainRouters} />
-      ) : (
-        <RouterProvider router={FPRouters} />
-      )}
+      <RouterProvider router={MainRouters} />
     </GlobalContext.Provider>
   );
 }

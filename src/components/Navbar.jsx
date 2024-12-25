@@ -3,7 +3,7 @@ import { FaBars } from "react-icons/fa";
 import { AiOutlineClose } from "react-icons/ai";
 import { IoMdLogOut } from "react-icons/io";
 
-import { Link, Outlet } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { SidebarData } from "./SidebarData";
 import style from "./Navbar.module.css";
 import GlobalContext from "../Hooks/GlobalContext";
@@ -13,7 +13,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { OverlayTrigger, Tooltip } from "react-bootstrap";
 
-function Navbar() {
+function Navbar({ children }) {
   const [sidebar, setSidebar] = useState(true);
   const showSidebar = () => setSidebar(!sidebar);
   const {
@@ -77,9 +77,7 @@ function Navbar() {
           </OverlayTrigger>
         </div>{" "}
       </div>
-      <div className="container z-index-1">
-        <Outlet />
-      </div>
+      <div className="container z-index-1">{children}</div>
       <nav
         className={
           sidebar ? `${style.nav_menu} ${style.active}` : style.nav_menu
@@ -94,7 +92,7 @@ function Navbar() {
                 .join(" ");
               return (
                 <li key={index} className={itemClasses}>
-                  <Link to={item?.path}>
+                  <Link to={`/${item?.path}`}>
                     {item.icon}
                     <span>{item.title}</span>
                   </Link>
