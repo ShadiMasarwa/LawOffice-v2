@@ -16,6 +16,7 @@ import FrontPage from "../pages/FrontPages/FrontPage";
 import Rules from "../pages/FrontPages/Rules";
 import ErrorPage from "../pages/FrontPages/ErrorPage";
 import Register from "../pages/FrontPages/Register";
+import Finanace from "../pages/Finanace";
 
 const MainRouters = createBrowserRouter([
   {
@@ -56,6 +57,7 @@ const MainRouters = createBrowserRouter([
           </Layout>
         ),
       },
+      // Protected route
       {
         path: "home",
         element: (
@@ -65,7 +67,7 @@ const MainRouters = createBrowserRouter([
             </Navbar>
           </ProtectedRoute>
         ),
-      }, // Protected route
+      },
       {
         path: "addClient",
         element: (
@@ -142,6 +144,16 @@ const MainRouters = createBrowserRouter([
           <ProtectedRoute>
             <Navbar>
               <Tasks />
+            </Navbar>
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "finance",
+        element: (
+          <ProtectedRoute>
+            <Navbar>
+              <Finanace />
             </Navbar>
           </ProtectedRoute>
         ),
